@@ -1,104 +1,219 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Donaciones Solidarias</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Donaciones en USDT</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Roboto', sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f4f6f9;
-      color: #333;
-      text-align: center;
+    body { 
+      font-family: 'Poppins', sans-serif; margin: 0; padding: 0; 
+      background: linear-gradient(135deg, rgba(15,23,42,0.9), rgba(30,41,59,0.9)), 
+                  url("https://images.unsplash.com/photo-1506784983877-45594efa4cbe?auto=format&fit=crop&w=1600&q=80") no-repeat center center/cover;
+      color: #fff; text-align: center; 
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
-    header {
-      background: #0f172a;
-      color: #fff;
-      padding: 20px;
+    header { padding: 40px 20px 10px; animation: fadeInDown 1s ease; }
+    header img { width: 80px; margin-bottom: 10px; }
+    header h1 { font-size: 2rem; font-weight: 700; margin: 0; }
+    header p { margin-top: 6px; font-size: 0.95rem; opacity: 0.85; }
+
+    .container { padding: 20px; display: flex; justify-content: center; flex-grow: 1; align-items: center; }
+    .donation-box { 
+      background: rgba(255,255,255,0.08); 
+      backdrop-filter: blur(18px); 
+      border: 1px solid rgba(255,255,255,0.15); 
+      max-width: 400px; padding: 25px; 
+      border-radius: 20px; 
+      box-shadow: 0 8px 25px rgba(0,0,0,0.4); 
+      animation: fadeInUp 1s ease; 
     }
-    header h1 {
-      margin: 0;
-      font-size: 2rem;
+
+    .donation-box img.qr { width: 160px; margin: 18px 0; border-radius: 8px; transition: transform 0.3s; }
+    .donation-box img.qr:hover { transform: scale(1.05); }
+
+    .wallet { 
+      background: rgba(31,41,55,0.6); padding: 12px; 
+      border-radius: 10px; word-wrap: break-word; 
+      margin: 18px 0; font-weight: 600; font-size: 0.9rem; 
+      border: 1px solid #10b981; color: #10b981; 
+      transition: background 0.3s; 
     }
-    .container {
-      padding: 40px 20px;
+    .wallet:hover { background: rgba(13,27,42,0.6); }
+
+    button { 
+      background: #10b981; color: #fff; 
+      padding: 10px 22px; border: none; 
+      border-radius: 10px; cursor: pointer; 
+      font-size: 0.95rem; font-weight: 600; 
+      transition: all 0.3s; 
     }
-    .donation-box {
-      background: #fff;
-      max-width: 600px;
-      margin: auto;
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    button:hover { background: #059669; transform: scale(1.05); }
+
+    .whatsapp { 
+      display: inline-block; margin-top: 18px; 
+      padding: 10px 18px; background: #25D366; 
+      color: #fff; border-radius: 10px; 
+      font-weight: 600; text-decoration: none; 
+      transition: transform 0.3s, background 0.3s; 
     }
-    .donation-box img {
-      width: 100px;
-      margin-bottom: 20px;
+    .whatsapp:hover { background: #1da851; transform: scale(1.05); }
+
+    .review { 
+      max-width: 540px; margin: 30px auto 15px; 
+      padding: 22px; background: rgba(30,41,59,0.6); 
+      border-radius: 14px; border-left: 4px solid #10b981; 
+      font-style: italic; font-size: 0.95rem; 
+      opacity: 0; transition: opacity 1s; min-height: 80px; 
     }
-    .wallet {
-      background: #f0f0f0;
-      padding: 10px;
-      border-radius: 10px;
-      word-wrap: break-word;
-      margin: 15px 0;
-      font-weight: bold;
-      font-size: 1rem;
+    .review.show { opacity: 1; }
+
+    .indicators { display: flex; justify-content: center; gap: 8px; margin-bottom: 25px; }
+    .dot { 
+      width: 12px; height: 12px; border-radius: 50%; 
+      background: #475569; transition: background 0.3s, transform 0.3s; 
+      cursor: pointer; 
     }
-    button {
-      background: #16a34a;
-      color: #fff;
-      padding: 12px 25px;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: background 0.3s;
+    .dot.active { background: #10b981; transform: scale(1.3); }
+
+    .counter { 
+      margin: 20px auto 0; font-size: 1.6rem; 
+      font-weight: 700; color: #10b981; 
+      background: rgba(30,41,59,0.7); 
+      display: inline-block; 
+      padding: 16px 26px; border-radius: 14px; 
+      border: 2px solid #10b981; 
+      box-shadow: 0 0 14px rgba(16,185,129,0.4); 
+      animation: pulse 2s infinite; 
     }
-    button:hover {
-      background: #15803d;
+
+    /* Barra de progreso */
+    .progress-container {
+      max-width: 500px;
+      margin: 30px auto;
+      background: rgba(255,255,255,0.08);
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.1);
     }
-    footer {
-      margin-top: 40px;
-      padding: 20px;
-      background: #0f172a;
-      color: #fff;
+    .progress-bar {
+      height: 22px;
+      background: linear-gradient(90deg, #10b981, #34d399);
+      width: 0%;
+      transition: width 1.5s ease;
     }
+
+    footer { margin-top: 20px; padding: 12px; font-size: 0.9rem; opacity: 0.7; }
+
+    /* Animaciones */
+    @keyframes fadeInDown { from {opacity: 0; transform: translateY(-20px);} to {opacity: 1; transform: translateY(0);} }
+    @keyframes fadeInUp { from {opacity: 0; transform: translateY(20px);} to {opacity: 1; transform: translateY(0);} }
+    @keyframes pulse { 0%,100% { box-shadow: 0 0 14px rgba(16,185,129,0.4);} 50% { box-shadow: 0 0 20px rgba(16,185,129,0.8);} }
   </style>
 </head>
 <body>
   <header>
-    <h1>🌍 Donaciones para una Vida Digna</h1>
-    <p>Tu ayuda puede cambiar mi presente y construir un mejor futuro 🙏</p>
+    <img src="https://cryptologos.cc/logos/tether-usdt-logo.png" alt="USDT"/>
+    <h1>Apóyame con tu Donación</h1>
+    <p>Tu aporte en <b>USDT</b> me ayuda a salir adelante 🙏</p>
   </header>
 
   <div class="container">
     <div class="donation-box">
-      <img src="https://cryptologos.cc/logos/tether-usdt-logo.png" alt="USDT Logo">
-      <h2>Haz tu donación en USDT (BEP20)</h2>
-      <p>Escanea o copia la dirección de mi wallet:</p>
-      <div class="wallet">
-        0x7b0e06ebe1fd80aceecae913bbb2a5aa4e5e39a3
-      </div>
+      <h2>Escanea o copia la dirección</h2>
+      <img class="qr" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=0x7b0e06ebe1fd80aceecae913bbb2a5aa4e5e39a3" alt="QR Wallet"/>
+      <div class="wallet">0x7b0e06ebe1fd80aceecae913bbb2a5aa4e5e39a3</div>
       <button onclick="copyWallet()">📋 Copiar Dirección</button>
-      <p style="margin-top:20px;">Red: <strong>BNB Smart Chain (BEP20)</strong></p>
-      <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=0x7b0e06ebe1fd80aceecae913bbb2a5aa4e5e39a3" alt="QR Wallet">
+      <p style="margin-top:12px;">Red: <strong>BNB Smart Chain (BEP20)</strong></p>
+      <a class="whatsapp" href="https://wa.me/51951354988" target="_blank">📱 Contactar por WhatsApp</a>
     </div>
   </div>
 
-  <footer>
-    <p>💚 Gracias por tu apoyo, cada ayuda cuenta. Compartiendo esta página también ayudas 🌟</p>
-  </footer>
+  <div class="review" id="reviewBox">"Cada donación que recibo significa una nueva oportunidad para seguir adelante."</div>
+  <div class="indicators" id="indicators"></div>
+  <div class="counter" id="counter">Saldo en USDT: cargando...</div>
+
+  <!-- Barra de progreso -->
+  <div class="progress-container">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <footer><p>💚 Gracias por tu apoyo. Cada ayuda cuenta 🌟</p></footer>
 
   <script>
     function copyWallet() {
-      const wallet = "0x7b0e06ebe1fd80aceecae913bbb2a5aa4e5e39a3";
-      navigator.clipboard.writeText(wallet).then(() => {
-        alert("Dirección copiada: " + wallet);
-      });
+      navigator.clipboard.writeText("0x7b0e06ebe1fd80aceecae913bbb2a5aa4e5e39a3")
+        .then(() => alert("✅ Dirección copiada"));
     }
+
+    // Carrusel de reseñas
+    const reviews = [
+      "Cada donación que recibo significa una nueva oportunidad para seguir adelante.",
+      "Gracias a tu ayuda puedo acercarme a una vida más digna y llena de esperanza.",
+      "Tu apoyo me motiva a no rendirme y luchar por un mejor futuro.",
+      "Aunque sea pequeña, tu ayuda tiene un gran impacto en mi vida.",
+      "Con tu aporte me acerco cada día más a mis metas personales."
+    ];
+    let idx = 0, auto;
+    const reviewBox = document.getElementById("reviewBox"), indicators = document.getElementById("indicators");
+    reviews.forEach((_, i) => {
+      const dot = document.createElement("div"); dot.classList.add("dot"); if (i===0) dot.classList.add("active");
+      dot.addEventListener("click", () => { idx = i; showReview(); resetAuto(); });
+      indicators.appendChild(dot);
+    });
+    const dots = document.querySelectorAll(".dot");
+    function showReview() {
+      reviewBox.classList.remove("show");
+      setTimeout(() => { reviewBox.textContent = `"${reviews[idx]}"`; reviewBox.classList.add("show"); 
+        dots.forEach((d,i) => d.classList.toggle("active", i===idx));
+      }, 300);
+    }
+    showReview();
+    function nextReview(){ idx=(idx+1)%reviews.length; showReview(); }
+    auto = setInterval(nextReview, 5000);
+    function resetAuto(){ clearInterval(auto); auto = setInterval(nextReview, 5000); }
+
+    // Animación contador de números
+    function animateValue(element, start, end, duration) {
+      let startTime = null;
+      function step(currentTime) {
+        if (!startTime) startTime = currentTime;
+        const progress = Math.min((currentTime - startTime) / duration, 1);
+        const value = start + (end - start) * progress;
+        element.textContent = `Saldo en USDT: ${value.toFixed(2)}`;
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        }
+      }
+      requestAnimationFrame(step);
+    }
+
+    // Obtener saldo real de USDT
+    const counterEl = document.getElementById("counter");
+    const progressBar = document.getElementById("progressBar");
+    const apiKey = "KYDZmYUGMtIGtLuVRINurTq7ot8WgN0i7UtVo5VLv4CofehtSHSyeY4WmdayaNnK";
+    const address = "0x7b0e06ebe1fd80aceecae913bbb2a5aa4e5e39a3";
+    const usdtContract = "0x55d398326f99059ff775485246999027b3197955";
+    let lastBalance = 0;
+    const goal = 1000; // Meta de 1000 USDT
+
+    async function fetchBalance() {
+      try {
+        const res = await fetch(`https://api.bscscan.com/api?module=account&action=tokenbalance&contractaddress=${usdtContract}&address=${address}&tag=latest&apikey=${apiKey}`);
+        const data = await res.json();
+        const balance = parseInt(data.result) / 1e18;
+        animateValue(counterEl, lastBalance, balance, 1500);
+        lastBalance = balance;
+        // Actualizar barra
+        const percent = Math.min((balance / goal) * 100, 100);
+        progressBar.style.width = percent + "%";
+      } catch {
+        counterEl.textContent = "Saldo en USDT: error al cargar";
+      }
+    }
+    fetchBalance();
+    setInterval(fetchBalance, 30000); // cada 30 segundos
   </script>
 </body>
 </html>
